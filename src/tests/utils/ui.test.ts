@@ -1,7 +1,25 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-import { truncateText } from "../../ui/utils";
+import stripAnsi from "strip-ansi";
+import { renderBox, truncateText } from "../../ui/utils";
+import { getConfig } from "../../utils/config";
+
+describe("renderBox", () => {
+  afterEach(() => {
+    getConfig().boxBorderStyle = "square";
+  });
+
+  test("uses square corners by default", () => {
+    expect(renderBox(["ab"], 4).map(stripAnsi)).toEqual(["┌──┐", "│ab│", "└──┘"]);
+  });
+
+  test("uses rounded corners when configured", () => {
+    getConfig().boxBorderStyle = "rounded";
+
+    expect(renderBox(["ab"], 4).map(stripAnsi)).toEqual(["╭──╮", "│ab│", "╰──╯"]);
+  });
+});
 
 describe("truncateText", () => {
   test("handling chinese wide characters", () => {
